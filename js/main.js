@@ -2,7 +2,8 @@ ymaps.ready(function () {
     var myPlacemark, myMap = new ymaps.Map('map', {
             center: [59.91, 30.30],
             zoom: 10,
-            behaviors: ['default', 'scrollZoom']
+            controls: ['smallMapDefaultSet']
+         //   behaviors: ['default', 'scrollZoom']
         }, {
             searchControlProvider: 'yandex#search'
         }),

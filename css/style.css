@@ -1,0 +1,154 @@
+
+*{
+    box-sizing: border-box;
+}
+textarea {
+  resize: none;
+}
+button{
+    cursor: pointer;
+}
+button:focus{
+    outline: none;
+}
+body{
+    font-family: 'Fira Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #4f4f4d;
+}
+.container {
+    margin: auto;
+    margin-top: 30px;
+    width: 1100px;
+    height: 650px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    position:relative;
+}
+.popup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 380px;
+    height: 530px;
+    border-radius: 20px;
+    background: white;
+    display: none;
+}
+
+.popup__header {
+    background: #ff8663;
+    border-radius: 20px 20px 0 0;
+    padding: 5px 15px;
+}
+
+.popup__close {
+    display: inline-block;
+    float: right;
+    width: 15px;
+    height: 28px;
+    background: #ff8663 url(../img/rect.png) no-repeat;
+    background-position: 50% 50%;
+    border: none;
+}
+
+.popup__title {
+    color: white;
+    font-size: 12px;
+    line-height: 10px;
+    font-weight: 300;
+    display: inline-block;
+    padding-left: 20px;
+    position: relative;
+}
+.popup__title:before {
+    position: absolute;
+    content: "";
+    width: 15px;
+    height: 15px;
+    top: -2px;
+    left: 3px;
+    background-image: url(../img/point--icon.png);
+    background-repeat: no-repeat;
+}
+
+.review__author {
+    font-weight: 500;
+}
+
+.review__date {
+    font-size: 14px;
+    opacity: 0.7;  
+}
+
+.new-review__title {
+    text-transform: uppercase;
+    color: #ff8663;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.new-review__input {
+    width: 350px;
+    height: 30px;
+    border: 1px solid #c4c4c4;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    padding: 10px 15px;
+}
+
+.popup__btn {
+    width: 88px;
+    height: 33px;
+    color: white;
+    font-size: 12px;
+    font-weight: 300;
+    background: #ff8663;
+    border-radius: 10px;
+    border: none;
+    float:right;
+}
+.popup__btn:hover {
+    background: #fa9477; 
+}
+.popup__btn:active {
+    background: #fb7852; 
+}
+
+
+.new-review__textarea {
+    border-radius: 20px;
+    border: 1px solid #c4c4c4;
+    width: 350px;
+    height: 130px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+}
+
+.popup__content {
+    padding: 15px;
+}
+
+.review__place {
+  opacity: 0.7;      
+}
+
+.review {
+    height: 150px;
+    overflow: scroll;
+    border-bottom: solid 1px #f0f0f0;
+}
+
+.review__text {
+    margin-top: -2px;
+}
+
+.review__item {
+    margin-bottom: 15px;
+}
+
+.logo {
+    position: absolute;
+    bottom: 25px;
+    right: 25px;
+}
