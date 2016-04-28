@@ -3,6 +3,7 @@ ymaps.ready(function () {
         name,
         text,
         place,
+        reviewInner = document.getElementById('review'),
         closeBtn = document.getElementById('closeBtn'),
         button = document.getElementById('button'),
         popup = document.getElementById('popup'),
@@ -14,52 +15,32 @@ ymaps.ready(function () {
             center: [59.91, 30.30],
             zoom: 10,
             controls: ['smallMapDefaultSet']
-                //   behaviors: ['default', 'scrollZoom']
         }, {
             searchControlProvider: 'yandex#search'
         }),
         customItemContentLayout = ymaps.templateLayoutFactory.createClass(
-            // Флаг "raw" означает, что данные вставляют "как есть" без экранирования html.
             '<h2 class=ballon_header>{{ properties.balloonContentHeader|raw }}</h2>' +
             '<div class=ballon_body>{{ properties.balloonContentBody|raw }}</div>' +
             '<div class=ballon_footer>{{ properties.balloonContentFooter|raw }}</div>'
         ),
         clusterer = new ymaps.Clusterer({
-            clusterDisableClickZoom: true,
-            clusterOpenBalloonOnClick: true, // Устанавливаем стандартный макет балуна кластера "Карусель".
-            clusterBalloonContentLayout: 'cluster#balloonCarousel', // Устанавливаем собственный макет.
-            clusterBalloonItemContentLayout: customItemContentLayout, // Устанавливаем режим открытия балуна.
-            // В данном примере балун никогда не будет открываться в режиме панели.
-            clusterBalloonPanelMaxMapArea: 0, // Устанавливаем размеры макета контента балуна (в пикселях).
-            clusterBalloonContentLayoutWidth: 200,
-            clusterBalloonContentLayoutHeight: 130, // Устанавливаем максимальное количество элементов в нижней панели на одной странице
-            clusterBalloonPagerSize: 5
-                // Настройка внешего вида нижней панели.
-                // Режим marker рекомендуется использовать с небольшим количеством элементов.
-                // clusterBalloonPagerType: 'marker',
-                // Можно отключить зацикливание списка при навигации при помощи боковых стрелок.
-                // clusterBalloonCycling: false,
-                // Можно отключить отображение меню навигации.
-                // clusterBalloonPagerVisible: false
-        })
 
-    /**
-     * Функция возвращает объект, содержащий опции метки.
-     * Все опции, которые поддерживают геообъекты, можно посмотреть в документации.
-     * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/GeoObject.xml
-     */
+            clusterDisableClickZoom: true,
+            clusterOpenBalloonOnClick: true,
+            clusterBalloonContentLayout: 'cluster#balloonCarousel',
+            clusterBalloonItemContentLayout: customItemContentLayout,
+            clusterBalloonPanelMaxMapArea: 0,
+            clusterBalloonContentLayoutWidth: 200,
+            clusterBalloonContentLayoutHeight: 130,
+            clusterBalloonPagerSize: 5
+
+        })
     getPointOptions = function () {
             return {
                 preset: 'islands#violetIcon'
             };
         },
         geoObjects = [];
-
-
-    /**
-     * В кластеризатор можно добавить javascript-массив меток (не геоколлекцию) или одну метку.
-     * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/Clusterer.xml#add
-     */
     clusterer.add(geoObjects);
     myMap.geoObjects.add(clusterer);
 
@@ -71,6 +52,44 @@ ymaps.ready(function () {
         address.then(function (gotAddress) {
             var currentAddress = gotAddress.properties.get('text');
             showPopup(currentAddress);
+            removeReviews();
+
+            var xhr = new XMLHttpRequest();
+            xhr.responseType = 'json';
+            xhr.open('post', 'http://localhost:3000/', true);
+            xhr.onload = function () {
+                for (var address in xhr.response) {
+                    var reviews = xhr.response[address];
+                    reviews.forEach(function (review) {
+                        if (review.address == currentAddress) {
+                            var newReview = document.createElement('div');
+                            var newReviewName = document.createElement('span');
+                            var newReviewPlace = document.createElement('span');
+                            var newReviewText = document.createElement('p');
+                            var newReviewDate = document.createElement('span');
+                            newReview.className = "review__item";
+                            newReviewName.className = "review__author";
+                            newReviewName.innerHTML = review.name;
+                            newReviewPlace.className = "review__place";
+                            newReviewPlace.innerHTML = review.place;
+                            newReviewText.className = "review__text";
+                            newReviewText.innerHTML = review.text;
+                            newReviewDate.className = "review__date";
+                            newReviewDate.innerHTML = new Date(review.date).toDateString();
+                            reviewInner.appendChild(newReview);
+                            newReview.appendChild(newReviewName);
+                            newReview.appendChild(newReviewPlace);
+                            newReview.appendChild(newReviewText);
+                            newReview.appendChild(newReviewDate);
+                        }
+                    })
+                }
+
+            }
+            xhr.send(JSON.stringify({
+                op: 'all'
+            }));
+
             button.onclick = function saveNewReview() {
                 name = nameInput.value;
                 place = placeInput.value;
@@ -81,9 +100,6 @@ ymaps.ready(function () {
 
                 var xhr = new XMLHttpRequest();
                 xhr.open('post', 'http://localhost:3000/', true);
-                xhr.onloadend = function () {
-                    console.log(xhr.response); // Функция, которая добавляет отзыв в список отзывов этой точки
-                }
                 xhr.send(JSON.stringify({
                     op: 'add',
                     review: {
@@ -101,10 +117,18 @@ ymaps.ready(function () {
 
         })
     });
-    closeBtn.onclick = function(){
-      closePopup();  
+    closeBtn.onclick = function () {
+        closePopup();
     }
-    function closePopup(){
+
+    function removeReviews() {
+        console.log(reviewInner.children.length)
+        while (reviewInner.childNodes[0]) {
+            reviewInner.removeChild(reviewInner.childNodes[0]);
+        }
+    }
+
+    function closePopup() {
         popup.style.display = "none";
     }
 
@@ -116,10 +140,8 @@ ymaps.ready(function () {
 
     function showPopup(address) {
         popup.style.display = "block";
-        console.log(header.innerHTML);
         header.innerHTML = address;
     }
-
 
     function placeMarkToMap(coords, address, name, place, text) {
         myPlacemark = createPlacemark(coords);
@@ -150,7 +172,6 @@ ymaps.ready(function () {
     xhr.responseType = 'json';
     xhr.open('post', 'http://localhost:3000/', true);
     xhr.onload = function () {
-        console.log(xhr.response);
         for (var address in xhr.response) {
             var reviews = xhr.response[address];
             reviews.forEach(function (review) {

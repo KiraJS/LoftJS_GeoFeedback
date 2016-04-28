@@ -9,7 +9,7 @@ textarea {
 button {
     cursor: pointer;
 }
-
+input {outline:none;}
 button:focus {
     outline: none;
 }
@@ -46,7 +46,7 @@ body {
     border-radius: 20px 20px 0 0;
     padding: 5px 15px;
     height: 45px;
-    overflow:auto;
+    overflow: auto;
 }
 
 .popup__close {
@@ -83,6 +83,7 @@ body {
 
 .review__author {
     font-weight: 500;
+    margin-right: 10px;
 }
 
 .review__date {
@@ -151,6 +152,7 @@ body {
 
 .review__text {
     margin-top: -2px;
+    margin-bottom: -2px;
 }
 
 .review__item {
