@@ -1,9 +1,20 @@
 ymaps.ready(function () {
-    var myPlacemark, myMap = new ymaps.Map('map', {
+    var myPlacemark,
+        name,
+        text,
+        place,
+        closeBtn = document.getElementById('closeBtn'),
+        button = document.getElementById('button'),
+        popup = document.getElementById('popup'),
+        header = document.getElementById('header'),
+        nameInput = document.getElementById('name'),
+        placeInput = document.getElementById('place'),
+        textInput = document.getElementById('text'),
+        myMap = new ymaps.Map('map', {
             center: [59.91, 30.30],
             zoom: 10,
             controls: ['smallMapDefaultSet']
-         //   behaviors: ['default', 'scrollZoom']
+                //   behaviors: ['default', 'scrollZoom']
         }, {
             searchControlProvider: 'yandex#search'
         }),
@@ -31,13 +42,13 @@ ymaps.ready(function () {
                 // Можно отключить отображение меню навигации.
                 // clusterBalloonPagerVisible: false
         })
-    
-        /**
-         * Функция возвращает объект, содержащий опции метки.
-         * Все опции, которые поддерживают геообъекты, можно посмотреть в документации.
-         * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/GeoObject.xml
-         */
-        getPointOptions = function () {
+
+    /**
+     * Функция возвращает объект, содержащий опции метки.
+     * Все опции, которые поддерживают геообъекты, можно посмотреть в документации.
+     * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/GeoObject.xml
+     */
+    getPointOptions = function () {
             return {
                 preset: 'islands#violetIcon'
             };
@@ -58,34 +69,57 @@ ymaps.ready(function () {
             address = getAddress(coords);
 
         address.then(function (gotAddress) {
-            console.log(gotAddress.properties.get('text'));
-            var name = prompt('имя');
-            var place = prompt('место');
-            var text = prompt('отзыв');
+            var currentAddress = gotAddress.properties.get('text');
+            showPopup(currentAddress);
+            button.onclick = function saveNewReview() {
+                name = nameInput.value;
+                place = placeInput.value;
+                text = textInput.value;
+                placeMarkToMap(coords, gotAddress.properties.get('text'), name, place, text);
+                closePopup();
+                resetValues();
 
-            placeMarkToMap(coords, gotAddress.properties.get('text'), name, place, text);
-
-            var xhr = new XMLHttpRequest();
-            xhr.open('post', 'http://localhost:3000/', true);
-            xhr.onloadend = function () {
-                console.log(xhr.response); // Функция, которая добавляет отзыв в список отзывов этой точки
-            }
-            xhr.send(JSON.stringify({
-                op: 'add',
-                review: {
-                    coords: {
-                        x: coords[0],
-                        y: coords[1]
-                    },
-                    address: gotAddress.properties.get('text'),
-                    name: name,
-                    place: place,
-                    text: text
+                var xhr = new XMLHttpRequest();
+                xhr.open('post', 'http://localhost:3000/', true);
+                xhr.onloadend = function () {
+                    console.log(xhr.response); // Функция, которая добавляет отзыв в список отзывов этой точки
                 }
-            }))
+                xhr.send(JSON.stringify({
+                    op: 'add',
+                    review: {
+                        coords: {
+                            x: coords[0],
+                            y: coords[1]
+                        },
+                        address: gotAddress.properties.get('text'),
+                        name: name,
+                        place: place,
+                        text: text
+                    }
+                }))
+            }
 
         })
     });
+    closeBtn.onclick = function(){
+      closePopup();  
+    }
+    function closePopup(){
+        popup.style.display = "none";
+    }
+
+    function resetValues() {
+        nameInput.value = "";
+        placeInput.value = "";
+        textInput.value = "";
+    }
+
+    function showPopup(address) {
+        popup.style.display = "block";
+        console.log(header.innerHTML);
+        header.innerHTML = address;
+    }
+
 
     function placeMarkToMap(coords, address, name, place, text) {
         myPlacemark = createPlacemark(coords);

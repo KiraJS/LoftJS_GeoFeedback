@@ -12,10 +12,10 @@
 <body>
     <div class="container">
         <div id="map" style="width:100%; height:100%;"></div>
-        <div class="popup">
+        <div class="popup" id="popup">
             <div class="popup__header">
-                <h2 class="popup__title">Адрес</h2>
-                <button class="popup__close"></button>
+                <h2 class="popup__title" id="header">Адрес</h2>
+                <button class="popup__close" id="closeBtn"></button>
             </div>
             <div class="popup__content">
                 <div class="review">
@@ -28,11 +28,11 @@
                 </div>
                 <div class="new-review">
                     <h2 class="new-review__title">Ваш отзыв</h2>
-                    <input type="text" class="new-review__input" placeholder="Ваше имя">
-                    <input type="text" class="new-review__input" placeholder="Укажите место">
-                    <textarea class="new-review__textarea" rows="10" cols="45" placeholder="Поделитесь впечатлениями"></textarea>
+                    <input type="text" class="new-review__input" placeholder="Ваше имя" id="name">
+                    <input type="text" class="new-review__input" placeholder="Укажите место" id="place">
+                    <textarea class="new-review__textarea" rows="10" cols="45" placeholder="Поделитесь впечатлениями" id="text"></textarea>
                 </div>
-                <button class="popup__btn">Добавить</button>
+                <button class="popup__btn" id="button">Добавить</button>
             </div>
         </div>
         <img src="img/logo.png" alt="GeoFeedBack" class="logo">
